@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import Modal from './Modal';
 import Searchbar from './Searchbar';
 import ImageGallery from './ImageGallery/ImageGallery';
-import Loader from './Loader';
+// import Loader from './Loader';
 import Button from './Button/Button';
 import './../styles/styles.css';
 import { ToastContainer, Zoom } from 'react-toastify';
