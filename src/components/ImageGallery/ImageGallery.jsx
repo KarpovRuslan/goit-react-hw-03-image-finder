@@ -1,4 +1,3 @@
-//import Button from 'components/Button/Button';
 import { Button } from 'components/Button/Button';
 import Loader from 'components/Loader';
 import Modal from 'components/Modal';
@@ -63,7 +62,14 @@ class ImageGallery extends Component {
       }));
     });
 
-    this.props.onScrollPage();
+    setTimeout(
+      () =>
+        window.scrollTo({
+          top: document.body.scrollHeight,
+          behavior: 'smooth',
+        }),
+      300
+    );
   };
 
   render() {

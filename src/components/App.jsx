@@ -14,13 +14,6 @@ export class App extends Component {
     this.setState({ searchValue: searchValue });
   };
 
-  onScrollPage = () => {
-    window.scrollTo({
-      top: document.documentElement.scrollHeight,
-      behavior: 'smooth',
-    });
-  };
-
   render() {
     return (
       <>
@@ -31,10 +24,7 @@ export class App extends Component {
           newestOnTop
           transition={Zoom}
         />
-        <ImageGallery
-          searchValue={this.state.searchValue}
-          onScrollPage={this.onScrollPage}
-        />
+        <ImageGallery searchValue={this.state.searchValue} />
       </>
     );
   }
