@@ -1,13 +1,10 @@
+import { createGlobalStyle } from 'styled-components';
+
+export const GlobalStyle = createGlobalStyle`
 html {
   box-sizing: border-box;
   width: 100vw;
   overflow-x: hidden;
-}
-
-*,
-*::before,
-*::after {
-  box-sizing: inherit;
 }
 
 body {
@@ -26,13 +23,10 @@ img {
   height: auto;
 }
 
-/*
- * Стили компонента App
- */
 .App {
   display: grid;
   grid-template-columns: 1fr;
   grid-gap: 16px;
   padding-bottom: 24px;
 }
-
+  `;
