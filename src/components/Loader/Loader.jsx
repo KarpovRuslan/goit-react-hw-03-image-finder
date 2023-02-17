@@ -1,4 +1,6 @@
 import { Component } from 'react';
+import { InfinitySpin } from 'react-loader-spinner';
+import css from './Loader.module.css';
 
 class Loader extends Component {
   state = {
@@ -10,7 +12,15 @@ class Loader extends Component {
   }
 
   render() {
-    return <>{this.state.loading && <h1>Загружаем...</h1>}</>;
+    return (
+      <>
+        {this.state.loading && (
+          <div className={css.loader}>
+            <InfinitySpin width="200" color="#3f51b5" />
+          </div>
+        )}
+      </>
+    );
   }
 }
 

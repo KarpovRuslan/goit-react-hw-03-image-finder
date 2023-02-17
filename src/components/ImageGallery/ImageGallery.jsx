@@ -1,42 +1,107 @@
+//import Button from 'components/Button/Button';
+import { Button } from 'components/Button/Button';
+import Loader from 'components/Loader';
+import Modal from 'components/Modal';
 import { Component } from 'react';
 import ImageGalleryItem from '../ImageGalleryItem';
+import ImagesApiService from './../../services/api';
+import css from './ImageGallery.module.css';
+
+const newImagesApiService = new ImagesApiService();
 
 class ImageGallery extends Component {
   state = {
-    searchValue: '',
     loading: false,
-    data: '',
+    status: 'idle',
+    currentImage: '',
+    showModal: false,
+    totalPages: null,
+    imgArray: [],
+    page: 1,
   };
 
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchValue !== this.props.searchValue) {
-      fetch(
-        `https://pixabay.com/api/?q=${this.props.searchValue}&page=1&key=32152972-b0c98a7cb53bef05c50b77987&image_type=photo&orientation=horizontal&per_page=12`
-      )
-        .then(res => res.json())
-        .then(data => this.setState({ data }))
-        .finally(() => this.setState({ loading: false }));
+      this.setState({ status: 'pending' });
+      newImagesApiService.resetPage();
+      newImagesApiService.query = this.props.searchValue;
+      newImagesApiService
+        .searchImages()
+        .then(data => {
+          if (data.hits.length > 0) {
+            this.setState({
+              imgArray: data.hits,
+              page: newImagesApiService.pages,
+              status: 'success',
+              totalPages: Math.ceil(data.totalHits / 12),
+            });
+          } else {
+            this.setState({ status: 'error' });
+          }
+        })
+        .catch(error => this.setState({ status: 'error' }));
     }
   }
+
+  showPicture = img => {
+    this.setState({
+      currentImage: img,
+    });
+    this.toggleModal();
+  };
+
+  toggleModal = () => {
+    this.setState({ showModal: !this.state.showModal });
+  };
+
+  loadMore = () => {
+    newImagesApiService.pages = 1;
+    newImagesApiService.searchImages().then(data => {
+      this.setState(prev => ({
+        imgArray: [...prev.imgArray, ...data.hits],
+        page: newImagesApiService.pages,
+      }));
+    });
+
+    this.props.onScrollPage();
+  };
+
   render() {
-    console.log(this.state.data);
-    return (
-      <ul className="imageGallery">
-        {!this.props.searchValue && (
-          <div>Please enter search Value to find smth..</div>
-        )}
-        {this.props.searchValue && (
-          <ImageGalleryItem
-          // key={id}
-          // id={id}
-          // webformatURL={webformatURL}
-          // largeImageURL={largeImageURL}
-          // tags={tags}
-          // showPicture={showPicture}
-          />
-        )}
-      </ul>
-    );
+    const { status, imgArray, showModal, currentImage, totalPages, page } =
+      this.state;
+
+    if (status === 'idle') {
+      return (
+        <div className={css.imageGallery__textContent}>
+          Please enter search Value to find smth..
+        </div>
+      );
+    }
+
+    if (status === 'pending') {
+      return <Loader timeout={2000} />;
+    }
+
+    if (status === 'success') {
+      return (
+        <>
+          <ul className={css.imageGallery}>
+            <ImageGalleryItem image={imgArray} showPicture={this.showPicture} />
+          </ul>
+          {page < totalPages && <Button onClick={this.loadMore} />}
+          {showModal && (
+            <Modal onClose={this.toggleModal} currentImage={currentImage} />
+          )}
+        </>
+      );
+    }
+    if (status === 'error') {
+      return (
+        <p className={css.imageGallery__textContent}>
+          Ooops! Something went wrong
+        </p>
+      );
+    }
   }
 }
 
