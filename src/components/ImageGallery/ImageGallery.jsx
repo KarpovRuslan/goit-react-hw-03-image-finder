@@ -3,10 +3,10 @@ import Loader from 'components/Loader';
 import Modal from 'components/Modal';
 import { Component } from 'react';
 import ImageGalleryItem from '../ImageGalleryItem';
-import ImagesApiService from './../../services/api';
+import ImagesApi from '../../services/ImagesApi';
 import css from './ImageGallery.module.css';
 
-const newImagesApiService = new ImagesApiService();
+const newImagesApi = new ImagesApi();
 
 class ImageGallery extends Component {
   state = {
@@ -22,15 +22,15 @@ class ImageGallery extends Component {
   componentDidUpdate(prevProps, prevState) {
     if (prevProps.searchValue !== this.props.searchValue) {
       this.setState({ status: 'pending' });
-      newImagesApiService.resetPage();
-      newImagesApiService.query = this.props.searchValue;
-      newImagesApiService
+      newImagesApi.resetPage();
+      newImagesApi.query = this.props.searchValue;
+      newImagesApi
         .searchImages()
         .then(data => {
           if (data.hits.length > 0) {
             this.setState({
               imgArray: data.hits,
-              page: newImagesApiService.pages,
+              page: newImagesApi.pages,
               status: 'success',
               totalPages: Math.ceil(data.totalHits / 12),
             });
@@ -54,11 +54,11 @@ class ImageGallery extends Component {
   };
 
   loadMore = () => {
-    newImagesApiService.pages = 1;
-    newImagesApiService.searchImages().then(data => {
+    newImagesApi.pages = 1;
+    newImagesApi.searchImages().then(data => {
       this.setState(prev => ({
         imgArray: [...prev.imgArray, ...data.hits],
-        page: newImagesApiService.pages,
+        page: newImagesApi.pages,
       }));
     });
 
